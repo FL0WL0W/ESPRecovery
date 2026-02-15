@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      
+      .container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+      }
+      
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 28px;
+      }
+      
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+      
+      .status-section {
+        background: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-left: 4px solid #667eea;
+      }
+      
+      .status-item {
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+      
+      .status-item label {
+        font-weight: 600;
+        color: #333;
+        display: inline-block;
+        width: 140px;
+      }
+      
+      .status-item .value {
+        color: #666;
+        font-family: 'Courier New', monospace;
+      }
+      
+      .upload-section {
+        margin-bottom: 30px;
+      }
+      
+      .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+      
+      .file-input-wrapper input[type="file"] {
+        display: none;
+      }
+      
+      .file-input-label {
+        display: block;
+        width: 100%;
+        padding: 40px;
+        background: #f9f9f9;
+        border: 2px dashed #667eea;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      
+      .file-input-label:hover {
+        background: #f0f0ff;
+        border-color: #764ba2;
+      }
+      
+      .file-input-label.dragover {
+        background: #e8e8ff;
+        border-color: #764ba2;
+      }
+      
+      .file-name {
+        font-size: 13px;
+        color: #666;
+        margin-top: 10px;
+        display: none;
+      }
+      
+      .file-name.show {
+        display: block;
+      }
+      
+      .progress-section {
+        display: none;
+        margin-bottom: 20px;
+      }
+      
+      .progress-section.show {
+        display: block;
+      }
+      
+      .progress-bar {
+        width: 100%;
+        height: 24px;
+        background: #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        width: 0%;
+        transition: width 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      
+      .progress-text {
+        font-size: 13px;
+        color: #666;
+        text-align: center;
+      }
+      
+      button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      
+      button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+      
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      
+      .message {
+        padding: 16px;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-size: 14px;
+        display: none;
+      }
+      
+      .message.show {
+        display: block;
+      }
+      
+      .message.success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      
+      .message.error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      
+      .message.info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+      
+      .icon {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      
+      .partition-item {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 12px;
+      }
+      
+      .partition-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      
+      .partition-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 15px;
+      }
+      
+      .partition-info {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 10px;
+        font-family: 'Courier New', monospace;
+      }
+      
+      .partition-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      
+      .partition-btn {
+        flex: 1;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .clear-btn {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+      }
+      
+      .clear-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(245, 87, 108, 0.3);
+      }
+      
+      .download-btn {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .download-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3);
+      }
+      
+      .partition-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    </style>
+    <title>ESP OTA Firmware Updater</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 OTA Firmware Updater</h1>
+      <p class="subtitle">Update your ESP32 firmware over-the-air</p>
+      
+      <div class="status-section">
+        <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">Available Partitions</h3>
+        <div id="partitions-list">Loading...</div>
+      </div>
+      
+      <div class="upload-section">
+        <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">Upload Firmware</h3>
+        <div class="file-input-wrapper">
+          <input type="file" id="firmware-file" accept=".bin,.elf" />
+          <label for="firmware-file" class="file-input-label" id="file-label">
+            <div class="icon">📁</div>
+            <div>Click to select firmware or drag and drop</div>
+            <div class="file-name" id="file-name"></div>
+          </label>
+        </div>
+        
+        <div class="progress-section" id="progress-section">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill">0%</div>
+          </div>
+          <div class="progress-text" id="progress-text">0 / 0 bytes</div>
+        </div>
+        
+        <button id="upload-btn" disabled>Upload Firmware</button>
+        <button id="reset-btn" onclick="resetDevice()">🔄 Reset Device</button>
+        
+        <div class="message" id="message"></div>
+      </div>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById('firmware-file');
+      const fileLabel = document.getElementById('file-label');
+      const fileName = document.getElementById('file-name');
+      const uploadBtn = document.getElementById('upload-btn');
+      const messageDiv = document.getElementById('message');
+      const progressSection = document.getElementById('progress-section');
+      const progressFill = document.getElementById('progress-fill');
+      const progressText = document.getElementById('progress-text');
+      
+      // Load device status
+      function loadStatus() {
+        fetch('/status')
+          .then(response => response.json())
+          .then(data => {
+            displayPartitions(data.partitions);
+          })
+          .catch(error => console.error('Error loading status:', error));
+      }
+      
+      function displayPartitions(partitions) {
+        const partitionsList = document.getElementById('partitions-list');
+        if (!partitions || partitions.length === 0) {
+          partitionsList.innerHTML = '<p style="color: #666;">No partitions available</p>';
+          return;
+        }
+        
+        partitionsList.innerHTML = '';
+        partitions.forEach(partition => {
+          const partitionDiv = document.createElement('div');
+          partitionDiv.className = 'partition-item';
+          
+          const partitionType = partition.type === 0 ? 'APP' : (partition.type === 1 ? 'DATA' : 'UNKNOWN');
+          const sizeInMB = (partition.size / 1024 / 1024).toFixed(2);
+          
+          partitionDiv.innerHTML = `
+            <div class="partition-header">
+              <span class="partition-name">${partition.label}</span>
+              <span style="font-size: 12px; color: #999;">${partitionType}</span>
+            </div>
+            <div class="partition-info">
+              Address: 0x${partition.address} | Size: ${sizeInMB}MB
+            </div>
+            <div class="partition-buttons">
+              <button class="partition-btn download-btn" onclick="downloadPartition('${partition.label}')\" title=\"Download partition data\">📥 Download</button>
+              <button class="partition-btn clear-btn" onclick=\"clearPartition('${partition.label}')\" title=\"Clear/erase partition\">🗑️ Clear</button>
+            </div>
+          `;
+          partitionsList.appendChild(partitionDiv);
+        });
+      }
+      
+      function downloadPartition(label) {
+        // Trigger download using a temporary link
+        const link = document.createElement('a');
+        link.href = '/download?label=' + encodeURIComponent(label);
+        link.download = `partition_${label}.bin`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      
+      function clearPartition(label) {
+        if (!confirm(`Are you sure you want to clear the '${label}' partition? This cannot be undone.`)) {
+          return;
+        }
+        
+        showMessage('Clearing partition...', 'info');
+        
+        fetch('/clear', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ label: label })
+        })
+        .then(response => response.json())
+        .then(data => {
+          showMessage(`Partition '${label}' cleared successfully!`, 'success');
+          setTimeout(loadStatus, 1000);
+        })
+        .catch(error => {
+          console.error('Error clearing partition:', error);
+          showMessage(`Failed to clear partition: ${error.message}`, 'error');
+        });
+      }
+      
+      // Load status on page load and refresh every 5 seconds
+      loadStatus();
+      setInterval(loadStatus, 5000);
+      
+      // File selection
+      fileInput.addEventListener('change', function() {
+        updateFileLabel();
+      });
+      
+      // Drag and drop
+      fileLabel.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileLabel.classList.add('dragover');
+      });
+      
+      fileLabel.addEventListener('dragleave', function() {
+        fileLabel.classList.remove('dragover');
+      });
+      
+      fileLabel.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileLabel.classList.remove('dragover');
+        fileInput.files = e.dataTransfer.files;
+        updateFileLabel();
+      });
+      
+      function updateFileLabel() {
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          fileName.textContent = 'Selected: ' + file.name + ' (' + formatBytes(file.size) + ')';
+          fileName.classList.add('show');
+          uploadBtn.disabled = false;
+        } else {
+          fileName.classList.remove('show');
+          uploadBtn.disabled = true;
+        }
+      }
+      
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+      }
+      
+      // Upload firmware
+      uploadBtn.addEventListener('click', async function() {
+        if (fileInput.files.length === 0) {
+          showMessage('Please select a firmware file', 'error');
+          return;
+        }
+        
+        const file = fileInput.files[0];
+        uploadBtn.disabled = true;
+        progressSection.classList.add('show');
+        messageDiv.classList.remove('show');
+        
+        try {
+          const xhr = new XMLHttpRequest();
+          
+          xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+              const percentComplete = (e.loaded / e.total) * 100;
+              progressFill.style.width = percentComplete + '%';
+              progressFill.textContent = Math.round(percentComplete) + '%';
+              progressText.textContent = formatBytes(e.loaded) + ' / ' + formatBytes(e.total);
+            }
+          });
+          
+          xhr.addEventListener('load', function() {
+            progressSection.classList.remove('show');
+            if (xhr.status === 200) {
+              showMessage('Firmware uploaded successfully! Device is rebooting...', 'success');
+              uploadBtn.disabled = true;
+              fileInput.disabled = true;
+              fileLabel.style.pointerEvents = 'none';
+              fileLabel.style.opacity = '0.5';
+            } else {
+              showMessage('Upload failed: ' + xhr.responseText, 'error');
+              uploadBtn.disabled = false;
+            }
+          });
+          
+          xhr.addEventListener('error', function() {
+            progressSection.classList.remove('show');
+            showMessage('Network error during upload', 'error');
+            uploadBtn.disabled = false;
+          });
+          
+          xhr.open('POST', '/upload', true);
+          xhr.send(file);
+        } catch (error) {
+          progressSection.classList.remove('show');
+          showMessage('Error: ' + error.message, 'error');
+          uploadBtn.disabled = false;
+        }
+      });
+      
+      function showMessage(text, type) {
+        messageDiv.textContent = text;
+        messageDiv.className = 'message show ' + type;
+      }
+      
+      function resetDevice() {
+        if (confirm('Are you sure you want to reset the device? It will reboot into the OTA partition.')) {
+          fetch('/reset', { method: 'POST' })
+            .then(response => response.text())
+            .then(data => {
+              showMessage('Device is rebooting...', 'success');
+            })
+            .catch(error => {
+              showMessage('Error: ' + error.message, 'error');
+            });
+        }
+      }
+    </script>
+  </body>
+</html>
