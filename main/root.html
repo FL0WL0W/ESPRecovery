@@ -279,20 +279,368 @@
         opacity: 0.6;
         cursor: not-allowed;
       }
+      
+      .partition-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: linear-gradient(135deg, #ccc 0%, #999 100%) !important;
+      }
+      
+      .expand-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .expand-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+      }
+      
+      .spiffs-toggle-link {
+        color: #666;
+        cursor: pointer;
+        font-size: 13px;
+        transition: color 0.2s;
+      }
+      
+      .spiffs-toggle-link:hover {
+        color: #333;
+      }
+      
+      .spiffs-arrow {
+        display: inline-block;
+        transition: transform 0.2s;
+        margin-right: 4px;
+      }
+      
+      .nvs-toggle-link {
+        color: #666;
+        cursor: pointer;
+        font-size: 13px;
+        transition: color 0.2s;
+      }
+      
+      .nvs-toggle-link:hover {
+        color: #333;
+      }
+      
+      .nvs-arrow {
+        display: inline-block;
+        transition: transform 0.2s;
+        margin-right: 4px;
+      }
+      
+      .spiffs-files-expanded {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+      }
+      
+      .nvs-keys-expanded {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+      }
+      
+      .spiffs-quick-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .spiffs-file-row {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        padding: 6px 0;
+        border-bottom: 1px solid #f5f5f5;
+      }
+      
+      .spiffs-file-row:last-child {
+        border-bottom: none;
+      }
+      
+      .spiffs-file-name {
+        flex: 1;
+        color: #0066cc;
+        cursor: pointer;
+        text-decoration: underline;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        word-break: break-word;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+      }
+      
+      .spiffs-file-name:hover {
+        color: #0052a3;
+      }
+      
+      .spiffs-file-size {
+        color: #999;
+        font-size: 12px;
+        margin-left: 8px;
+        min-width: 50px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      
+      .spiffs-file-delete {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 0;
+        margin-left: 8px;
+        border-radius: 4px;
+        transition: background 0.2s;
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      
+      .spiffs-file-delete:hover {
+        background: #ffe6e6;
+      }
+      
+      .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+      
+      .file-input-wrapper input[type="file"] {
+        display: none;
+      }
+      
+      .file-input-label {
+        display: block;
+        width: 100%;
+        padding: 40px;
+        background: #f9f9f9;
+        border: 2px dashed #667eea;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      
+      .file-input-label:hover {
+        background: #f0f0ff;
+        border-color: #764ba2;
+      }
+      
+      .file-input-label.dragover {
+        background: #e8e8ff;
+        border-color: #764ba2;
+      }
+      
+      .file-name {
+        font-size: 13px;
+        color: #666;
+        margin-top: 10px;
+        display: none;
+      }
+      
+      .file-name.show {
+        display: block;
+      }
+      
+      .progress-section {
+        display: none;
+        margin-bottom: 20px;
+      }
+      
+      .progress-section.show {
+        display: block;
+      }
+      
+      .progress-bar {
+        width: 100%;
+        height: 24px;
+        background: #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        width: 0%;
+        transition: width 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      
+      .progress-text {
+        font-size: 13px;
+        color: #666;
+        text-align: center;
+      }
+      
+      .file-browser-list {
+        background: #f5f5f5;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      
+      .file-item {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .file-name-info {
+        flex: 1;
+      }
+      
+      .file-name-label {
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+        display: block;
+        margin-bottom: 4px;
+      }
+      
+      .file-size {
+        font-size: 12px;
+        color: #999;
+      }
+      
+      .file-buttons {
+        display: flex;
+        gap: 6px;
+      }
+      
+      .file-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .file-download-btn {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .file-download-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3);
+      }
+      
+      .file-delete-btn {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+      }
+      
+      .file-delete-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(245, 87, 108, 0.3);
+      }
+      
+      @keyframes fadeInStatus {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      
+      @keyframes fadeOutStatus {
+        from {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+      }
     </style>
     <title>ESP OTA Firmware Updater</title>
   </head>
   <body>
     <div class="container">
       <h1>🔧 OTA Firmware Updater</h1>
-      <p class="subtitle">Update your ESP32 firmware over-the-air</p>
+      <p class="subtitle">Update your ESP32 firmware over-the-air and manage partitions</p>
       
       <div class="status-section">
-        <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">Available Partitions</h3>
+        <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">Partitions</h3>
         <div id="partitions-list">Loading...</div>
       </div>
       
-      <div class="upload-section">
+      <div id="spiffs-expanded-section" style="display: none; margin-bottom: 30px;">
+        <div class="status-section" style="border-left-color: #764ba2;">
+          <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">📁 SPIFFS Browser - <span id="spiffs-expanded-name"></span></h3>
+          
+          <div style="margin-bottom: 20px;">
+            <h4 style="margin-bottom: 15px; color: #333; font-size: 14px;">Upload File</h4>
+            <div class="file-input-wrapper">
+              <input type="file" id="spiffs-file" />
+              <label for="spiffs-file" class="file-input-label" id="spiffs-file-label">
+                <div class="icon">📄</div>
+                <div>Click to select file or drag and drop</div>
+                <div class="file-name" id="spiffs-file-name"></div>
+              </label>
+            </div>
+            
+            <div class="progress-section" id="spiffs-progress-section">
+              <div class="progress-bar">
+                <div class="progress-fill" id="spiffs-progress-fill">0%</div>
+              </div>
+              <div class="progress-text" id="spiffs-progress-text">0 / 0 bytes</div>
+            </div>
+            
+            <button id="spiffs-upload-btn" disabled>Upload to SPIFFS</button>
+            <div class="message" id="spiffs-message"></div>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h4 style="margin-bottom: 15px; color: #333; font-size: 14px;">Files</h4>
+            <div class="file-browser-list" id="spiffs-files-list">Loading files...</div>
+          </div>
+          
+          <button id="spiffs-close-btn" onclick="closeSpiffsExpanded()" style="margin-top: 15px; background: #999;">Close Browser</button>
+        </div>
+      </div>
+      
+      <div class="upload-section" style="display: none;">
         <h3 style="margin-bottom: 15px; color: #333; font-size: 16px;">Upload Firmware</h3>
         <div class="file-input-wrapper">
           <input type="file" id="firmware-file" accept=".bin,.elf" />
@@ -311,13 +659,21 @@
         </div>
         
         <button id="upload-btn" disabled>Upload Firmware</button>
-        <button id="reset-btn" onclick="resetDevice()">🔄 Reset Device</button>
         
         <div class="message" id="message"></div>
+      </div>
+      
+      <div style="margin-top: 20px; padding: 15px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+        <button id="reset-btn" onclick="resetDevice()" style="margin-left: 15px; padding: 10px 20px; background: #f5576c; color: white; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap;">🔄 Reset Device</button>
+      </div>
+      <div style="margin-top: 20px; padding: 15px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+        <div id="status-ticker" style="flex-grow: 1; max-height: 150px; overflow-y: auto;"></div>
       </div>
     </div>
 
     <script>
+      let currentSpiffsPartition = '';
+      
       const fileInput = document.getElementById('firmware-file');
       const fileLabel = document.getElementById('file-label');
       const fileName = document.getElementById('file-name');
@@ -326,23 +682,52 @@
       const progressSection = document.getElementById('progress-section');
       const progressFill = document.getElementById('progress-fill');
       const progressText = document.getElementById('progress-text');
+      const statusTicker = document.getElementById('status-ticker');
+      
+      const spiffsFileInput = document.getElementById('spiffs-file');
+      const spiffsFileLabel = document.getElementById('spiffs-file-label');
+      const spiffsFileName = document.getElementById('spiffs-file-name');
+      const spiffsUploadBtn = document.getElementById('spiffs-upload-btn');
+      const spiffsProgressSection = document.getElementById('spiffs-progress-section');
+      const spiffsProgressFill = document.getElementById('spiffs-progress-fill');
+      const spiffsProgressText = document.getElementById('spiffs-progress-text');
+      
+      let runningPartitionLabel = null;
+      let bootPartitionLabel = null;
       
       // Load device status
       function loadStatus() {
         fetch('/status')
           .then(response => response.json())
           .then(data => {
-            displayPartitions(data.partitions);
+            runningPartitionLabel = data.running_partition;
+            bootPartitionLabel = data.boot_partition;
+            displayPartitions(data.partitions, data.running_partition, data.boot_partition);
           })
           .catch(error => console.error('Error loading status:', error));
       }
       
-      function displayPartitions(partitions) {
+      function displayPartitions(partitions, runningPartition, bootPartition) {
         const partitionsList = document.getElementById('partitions-list');
         if (!partitions || partitions.length === 0) {
           partitionsList.innerHTML = '<p style="color: #666;">No partitions available</p>';
           return;
         }
+        
+        // Store which partitions had files expanded
+        const expandedPartitions = new Set();
+        partitionsList.querySelectorAll('.spiffs-files-expanded').forEach(div => {
+          if (div.style.display === 'block') {
+            const partitionLabel = div.id.replace('spiffs-files-', '');
+            expandedPartitions.add(partitionLabel);
+          }
+        });
+        partitionsList.querySelectorAll('.nvs-keys-expanded').forEach(div => {
+          if (div.style.display === 'block') {
+            const partitionLabel = div.id.replace('nvs-keys-', '');
+            expandedPartitions.add(partitionLabel);
+          }
+        });
         
         partitionsList.innerHTML = '';
         partitions.forEach(partition => {
@@ -351,40 +736,456 @@
           
           const partitionType = partition.type === 0 ? 'APP' : (partition.type === 1 ? 'DATA' : 'UNKNOWN');
           const sizeInMB = (partition.size / 1024 / 1024).toFixed(2);
+          const isSpiffs = partition.type === 1 && partition.subtype === 130;
+          const isNvs = partition.type === 1 && partition.subtype === 2;
+          const isApp = partition.type === 0;
+          const isRunning = partition.label === runningPartition;
+          const isBootPartition = partition.label === bootPartition;
+          const radioId = `boot-${partition.label}`;
+          
+          const uploadBtnClass = isRunning ? 'partition-btn upload-btn disabled' : 'partition-btn upload-btn';
+          const uploadBtnDisabled = isRunning ? 'disabled' : '';
+          const uploadBtnTitle = isRunning ? 'Cannot upload to the currently running partition' : 'Upload binary to this partition';
+          
+          const clearBtnClass = isRunning ? 'partition-btn clear-btn disabled' : 'partition-btn clear-btn';
+          const clearBtnDisabled = isRunning ? 'disabled' : '';
+          const clearBtnTitle = isRunning ? 'Cannot clear the currently running partition' : 'Clear/erase partition';
+          
+          let buttonHtml = `
+            <div class="partition-buttons">
+              <button class="${uploadBtnClass}" onclick="triggerPartitionUpload('${partition.label}')" ondragover="dragOverPartitionUpload(event)" ondrop="dropPartitionUpload(event, '${partition.label}')" title="${uploadBtnTitle}" ${uploadBtnDisabled}>📤 Upload</button>
+              <input type="file" id="partition-upload-${partition.label}" style="display: none;" accept=".bin" onchange="uploadPartitionFile(event, '${partition.label}')">
+              <button class="partition-btn download-btn" onclick="downloadPartition('${partition.label}')" title="Download partition data">📥 Download</button>
+              <button class="${clearBtnClass}" onclick="clearPartition('${partition.label}')" title="${clearBtnTitle}" ${clearBtnDisabled}>🗑️ Clear</button>
+            </div>
+          `;
+          
+          let filesLinkHtml = '';
+          let filesListHtml = '';
+          if (isSpiffs) {
+            const isExpanded = expandedPartitions.has(partition.label);
+            const arrow = isExpanded ? '▼' : '▶';
+            filesLinkHtml = `<div style="margin-top: 8px;"><a class="spiffs-toggle-link" onclick="toggleSpiffsFiles('${partition.label}')" style="cursor: pointer;"><span class="spiffs-arrow">${arrow}</span> files</a></div>`;
+            filesListHtml = `<div class="spiffs-files-expanded" id="spiffs-files-${partition.label}" style="display: ${isExpanded ? 'block' : 'none'};"></div>`;
+            
+            // Restore files if it was expanded
+            if (isExpanded) {
+              setTimeout(() => {
+                const fileListDiv = document.getElementById(`spiffs-files-${partition.label}`);
+                if (fileListDiv) loadAndDisplaySpiffsFilesQuick(partition.label, fileListDiv);
+              }, 0);
+            }
+          } else if (isNvs) {
+            const isExpanded = expandedPartitions.has(partition.label);
+            const arrow = isExpanded ? '▼' : '▶';
+            filesLinkHtml = `<div style="margin-top: 8px;"><a class="nvs-toggle-link" onclick="toggleNvsKeys('${partition.label}')" style="cursor: pointer;"><span class="nvs-arrow">${arrow}</span> keys</a></div>`;
+            filesListHtml = `<div class="nvs-keys-expanded" id="nvs-keys-${partition.label}" style="display: ${isExpanded ? 'block' : 'none'};"></div>`;
+            
+            // Restore keys if it was expanded
+            if (isExpanded) {
+              setTimeout(() => {
+                const keyListDiv = document.getElementById(`nvs-keys-${partition.label}`);
+                if (keyListDiv) loadAndDisplayNvsKeysQuick(partition.label, keyListDiv);
+              }, 0);
+            }
+          }
           
           partitionDiv.innerHTML = `
             <div class="partition-header">
-              <span class="partition-name">${partition.label}</span>
+              <span class="partition-name">${isApp? `<input type="radio" id="${radioId}" name="boot_partition" value="${partition.label}" ${isBootPartition ? 'checked' : ''} onchange="setBootPartition('${partition.label}')"> <label for="${radioId}">` : ``}${partition.label}${isSpiffs ? ' (SPIFFS)' : ''}${isNvs ? ' (NVS)' : ''}${isApp? `</label>` : ``}</span>
               <span style="font-size: 12px; color: #999;">${partitionType}</span>
             </div>
             <div class="partition-info">
-              Address: 0x${partition.address} | Size: ${sizeInMB}MB
+              Address: 0x${partition.address} | Size: ${sizeInMB}MB ${isRunning ? '<span style="color: #667eea; font-size: 11px; font-weight: 600;">● Running</span>' : ''}
             </div>
-            <div class="partition-buttons">
-              <button class="partition-btn download-btn" onclick="downloadPartition('${partition.label}')\" title=\"Download partition data\">📥 Download</button>
-              <button class="partition-btn clear-btn" onclick=\"clearPartition('${partition.label}')\" title=\"Clear/erase partition\">🗑️ Clear</button>
-            </div>
+            ${buttonHtml}
+            ${filesLinkHtml}
+            ${filesListHtml}
           `;
           partitionsList.appendChild(partitionDiv);
         });
       }
       
+      function toggleSpiffsFiles(partitionLabel) {
+        const fileListDiv = document.getElementById(`spiffs-files-${partitionLabel}`);
+        const linkElement = event.target.closest('.spiffs-toggle-link');
+        const arrow = linkElement.querySelector('.spiffs-arrow');
+        
+        if (fileListDiv.style.display === 'none') {
+          // Show files
+          fileListDiv.style.display = 'block';
+          arrow.textContent = '▼';
+          loadAndDisplaySpiffsFilesQuick(partitionLabel, fileListDiv);
+        } else {
+          // Hide files
+          fileListDiv.style.display = 'none';
+          arrow.textContent = '▶';
+        }
+      }
+      
+      function loadAndDisplaySpiffsFilesQuick(partitionLabel, containerDiv) {
+        containerDiv.innerHTML = '<p style="color: #999; font-size: 12px; padding: 8px 0;">Loading files...</p>';
+        
+        fetch('/spiffs/list?partition=' + encodeURIComponent(partitionLabel))
+          .then(response => response.json())
+          .then(data => {
+            displaySpiffsFilesQuick(data.files, partitionLabel, containerDiv);
+          })
+          .catch(error => {
+            console.error('Error loading SPIFFS files:', error);
+            containerDiv.innerHTML = '<p style="color: #999; font-size: 12px; padding: 8px 0;">Failed to load files</p>';
+          });
+      }
+      
+      function displaySpiffsFilesQuick(files, partitionLabel, containerDiv) {
+        if (!files || files.length === 0) {
+          containerDiv.innerHTML = '<p style="color: #999; font-size: 12px; padding: 8px 0;">No files</p>';
+          return;
+        }
+        
+        containerDiv.innerHTML = '';
+        const list = document.createElement('div');
+        list.className = 'spiffs-quick-list';
+        
+        files.forEach((file, index) => {
+          const fileRow = document.createElement('div');
+          fileRow.className = 'spiffs-file-row';
+          
+          const fileName = document.createElement('span');
+          fileName.className = 'spiffs-file-name';
+          fileName.textContent = file.name || file.filename || 'Unknown';
+          fileName.title = 'Click to download';
+          fileName.dataset.filename = file.name || file.filename;
+          fileName.dataset.partition = partitionLabel;
+          fileName.addEventListener('click', () => downloadSpiffsFileQuick(file.name || file.filename, partitionLabel));
+          
+          const fileSize = document.createElement('span');
+          fileSize.className = 'spiffs-file-size';
+          fileSize.textContent = formatBytes(file.size || 0);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'spiffs-file-delete';
+          deleteBtn.textContent = '🗑️';
+          deleteBtn.title = 'Delete file';
+          deleteBtn.dataset.filename = file.name || file.filename;
+          deleteBtn.dataset.partition = partitionLabel;
+          deleteBtn.addEventListener('click', () => deleteSpiffsFileQuick(file.name || file.filename, partitionLabel));
+          
+          fileRow.appendChild(fileName);
+          fileRow.appendChild(fileSize);
+          fileRow.appendChild(deleteBtn);
+          list.appendChild(fileRow);
+        });
+        
+        containerDiv.appendChild(list);
+      }
+      
+      function downloadSpiffsFileQuick(filename, partitionLabel) {
+        addStatusItem(`📥 Downloading file '${filename}'...`, 'loading');
+        const link = document.createElement('a');
+        link.href = '/spiffs/download?partition=' + encodeURIComponent(partitionLabel) + '&name=' + encodeURIComponent(filename);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => addStatusItem(`✓ Download started for '${filename}'`, 'success'), 500);
+      }
+      
+      function deleteSpiffsFileQuick(filename, partitionLabel) {
+        if (!confirm(`Delete '${filename}'?`)) {
+          return;
+        }
+        
+        fetch('/spiffs/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ partition: partitionLabel, name: filename })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            addStatusItem(`✓ File '${filename}' deleted successfully!`, 'success');
+            // Reload the file list
+            const fileListDiv = document.getElementById(`spiffs-files-${partitionLabel}`);
+            loadAndDisplaySpiffsFilesQuick(partitionLabel, fileListDiv);
+          } else {
+            addStatusItem(`✕ Failed to delete file: ${data.message || 'Unknown error'}`, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting file:', error);
+          addStatusItem(`✕ Failed to delete file: ${error.message}`, 'error');
+        });
+      }
+
+      // NVS Functions
+      function toggleNvsKeys(partitionLabel) {
+        const keyListDiv = document.getElementById(`nvs-keys-${partitionLabel}`);
+        const linkElement = event.target.closest('.nvs-toggle-link');
+        const arrow = linkElement.querySelector('.nvs-arrow');
+        
+        if (keyListDiv.style.display === 'none') {
+          // Show keys
+          keyListDiv.style.display = 'block';
+          arrow.textContent = '▼';
+          loadAndDisplayNvsKeysQuick(partitionLabel, keyListDiv);
+        } else {
+          // Hide keys
+          keyListDiv.style.display = 'none';
+          arrow.textContent = '▶';
+        }
+      }
+      
+      function loadAndDisplayNvsKeysQuick(partitionLabel, containerDiv) {
+        containerDiv.innerHTML = '<p style="color: #999; font-size: 12px; padding: 8px 0;">Loading keys...</p>';
+        
+        fetch('/nvs/list?partition=' + encodeURIComponent(partitionLabel))
+          .then(response => response.json())
+          .then(data => {
+            displayNvsKeysQuick(data.keys, partitionLabel, containerDiv);
+          })
+          .catch(error => {
+            console.error('Error loading NVS keys:', error);
+            containerDiv.innerHTML = '<p style="color: #999; font-size: 12px; padding: 8px 0;">Failed to load keys</p>';
+          });
+      }
+      
+      function displayNvsKeysQuick(keys, partitionLabel, containerDiv) {
+        if (!keys || keys.length === 0) {
+          containerDiv.innerHTML = '<p style="color: #999; font-size: 12px; padding: 8px 0;">No keys</p>';
+          return;
+        }
+        
+        let html = '<table style="width: 100%; font-size: 11px; border-collapse: collapse; margin-top: 8px;">';
+        html += '<tr style="background: #f5f5f5; border-bottom: 1px solid #ddd;"><th style="padding: 6px; text-align: left;">Namespace</th><th style="padding: 6px; text-align: left;">Key</th><th style="padding: 6px; text-align: left;">Value</th><th style="padding: 6px; text-align: center;">Action</th></tr>';
+        
+        keys.forEach((key, index) => {
+          const inputId = `nvs-edit-${partitionLabel}-${index}`;
+          const viewId = `nvs-view-${partitionLabel}-${index}`;
+          let inputHtml = '';
+          
+          // Determine input type and validation based on key type
+          if (key.type === 0) { // U8
+            inputHtml = `<input type="number" id="${inputId}" min="0" max="255" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 1) { // I8
+            inputHtml = `<input type="number" id="${inputId}" min="-128" max="127" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 2) { // U16
+            inputHtml = `<input type="number" id="${inputId}" min="0" max="65535" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 3) { // I16
+            inputHtml = `<input type="number" id="${inputId}" min="-32768" max="32767" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 4) { // U32
+            inputHtml = `<input type="number" id="${inputId}" min="0" max="4294967295" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 5) { // I32
+            inputHtml = `<input type="number" id="${inputId}" min="-2147483648" max="2147483647" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 6) { // U64
+            inputHtml = `<input type="text" id="${inputId}" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 7) { // I64
+            inputHtml = `<input type="text" id="${inputId}" value="${key.value}" style="width: 100%; padding: 4px;">`;
+          } else if (key.type === 8) { // STR
+            inputHtml = `<textarea id="${inputId}" style="width: 100%; padding: 4px; font-family: monospace; max-height: 100px;">${key.value}</textarea>`;
+          } else if (key.type === 9) { // BLOB
+            inputHtml = `<input type="text" id="${inputId}" value="[BLOB data - cannot edit]" disabled style="width: 100%; padding: 4px;">`;
+          }
+          
+          const displayValue = key.value.length > 25 ? key.value.substring(0, 25) + '...' : key.value;
+          const isEditable = key.type !== 9; // BLOB is not editable
+          
+          html += `<tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 6px; font-weight: 600;">${key.namespace || 'default'}</td>
+            <td style="padding: 6px;">${key.key}</td>
+            <td style="padding: 6px; font-family: monospace; word-break: break-all; cursor: ${isEditable ? 'pointer' : 'default'};">
+              <span id="${viewId}" style="display: inline; cursor: ${isEditable ? 'pointer' : 'default'}; text-decoration: ${isEditable ? 'underline' : 'none'}; color: ${isEditable ? '#0066cc' : '#666'};" onclick="${isEditable ? `startEditNvsKey('${partitionLabel}', '${index}', ${key.type}, '${key.namespace || ''}', '${key.key}')` : 'false'}" title="${isEditable ? 'Click to edit' : ''}">${displayValue}</span>
+              <div id="edit-${inputId}" style="display: none;">
+                ${inputHtml}
+              </div>
+            </td>
+            <td style="padding: 6px; text-align: center;">
+              <button class="file-action-btn" onclick="deleteNvsKey('${partitionLabel}', '${key.key}')" style="padding: 4px 8px; font-size: 12px; background: #f5576c; color: white; border: none; border-radius: 3px; cursor: pointer; line-height: 1;">🗑️</button>
+            </td>
+          </tr>`;
+        });
+        
+        html += '</table>';
+        containerDiv.innerHTML = html;
+      }
+      
+      function startEditNvsKey(partitionLabel, index, type, namespace, keyName) {
+        const inputId = `nvs-edit-${partitionLabel}-${index}`;
+        const viewId = `nvs-view-${partitionLabel}-${index}`;
+        const editDiv = document.getElementById(`edit-${inputId}`);
+        const viewSpan = document.getElementById(viewId);
+        const input = document.getElementById(inputId);
+        
+        if (type === 9) return; // Cannot edit BLOB
+        
+        editDiv.style.display = 'block';
+        viewSpan.style.display = 'none';
+        
+        const originalValue = input.value;
+        
+        // Setup blur handler
+        input.onblur = function() {
+          const newValue = input.value;
+          if (newValue !== originalValue) {
+            // Value changed, save it
+            performNvsUpdate(partitionLabel, namespace, keyName, type, newValue, inputId, index);
+          } else {
+            // Value unchanged, just exit edit mode
+            exitEditNvsKey(inputId, viewId);
+          }
+        };
+        
+        input.focus();
+      }
+      
+      function performNvsUpdate(partitionLabel, namespace, keyName, type, newValue, inputId, index) {
+        // Validate based on type
+        if (type >= 0 && type <= 7) { // Numeric types
+          const num = parseInt(newValue);
+          if (isNaN(num)) {
+            addStatusItem('✕ Invalid numeric value', 'error');
+            const input = document.getElementById(inputId);
+            input.focus();
+            return;
+          }
+        } else if (type === 9) { // BLOB - cannot edit
+          addStatusItem('✕ Cannot edit BLOB data', 'error');
+          return;
+        }
+        
+        // Send update to backend
+        fetch('/nvs/set', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            partition: partitionLabel, 
+            namespace: namespace,
+            key: keyName,
+            value: newValue,
+            type: type
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            addStatusItem(`✓ Key '${keyName}' updated!`, 'success');
+            // Refresh the key list
+            setTimeout(() => {
+              const keyListDiv = document.getElementById(`nvs-keys-${partitionLabel}`);
+              if (keyListDiv) {
+                loadAndDisplayNvsKeysQuick(partitionLabel, keyListDiv);
+              }
+            }, 500);
+          } else {
+            addStatusItem(`✕ Failed to update key: ${data.message || 'Unknown error'}`, 'error');
+            const input = document.getElementById(inputId);
+            input.focus();
+          }
+        })
+        .catch(error => {
+          console.error('Error saving NVS key:', error);
+          addStatusItem('✕ Error saving key', 'error');
+          const input = document.getElementById(inputId);
+          input.focus();
+        });
+      }
+      
+      function exitEditNvsKey(inputId, viewId) {
+        const editDiv = document.getElementById(`edit-${inputId}`);
+        const viewSpan = document.getElementById(viewId);
+        
+        editDiv.style.display = 'none';
+        viewSpan.style.display = 'inline';
+      }
+      
+      function deleteNvsKey(partitionLabel, keyName) {
+        if (!confirm(`Are you sure you want to delete the NVS key '${keyName}' from '${partitionLabel}'?`)) {
+          return;
+        }
+        
+        fetch('/nvs/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ partition: partitionLabel, key: keyName })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            addStatusItem(`✓ Key '${keyName}' deleted successfully!`, 'success');
+            // Refresh the key list
+            setTimeout(() => {
+              const keyListDiv = document.getElementById(`nvs-keys-${partitionLabel}`);
+              if (keyListDiv) {
+                loadAndDisplayNvsKeysQuick(partitionLabel, keyListDiv);
+              }
+            }, 500);
+          } else {
+            addStatusItem(`✕ Failed to delete key: ${data.message || 'Unknown error'}`, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting NVS key:', error);
+          addStatusItem(`✕ Failed to delete key: ${error.message}`, 'error');
+        });
+      }
+      
+      function setBootPartition(label) {
+        addStatusItem(`Setting boot partition to '${label}'...`, 'loading');
+        
+        fetch('/set_boot', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ label: label })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            addStatusItem(`✓ Boot partition set to '${label}'`, 'success');
+            bootPartitionLabel = label;
+          } else {
+            addStatusItem(`✕ Failed to set boot partition: ${data.message || 'Unknown error'}`, 'error');
+            // Reset the radio button
+            setTimeout(loadStatus, 500);
+          }
+        })
+        .catch(error => {
+          console.error('Error setting boot partition:', error);
+          addStatusItem(`✕ Failed to set boot partition: ${error.message}`, 'error');
+          // Reset the radio button
+          setTimeout(loadStatus, 500);
+        });
+      }
+      
       function downloadPartition(label) {
-        // Trigger download using a temporary link
+        addStatusItem(`📥 Downloading partition '${label}'...`, 'loading');
         const link = document.createElement('a');
         link.href = '/download?label=' + encodeURIComponent(label);
         link.download = `partition_${label}.bin`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setTimeout(() => addStatusItem(`✓ Download started for '${label}'`, 'success'), 500);
       }
       
       function clearPartition(label) {
+        if (label === runningPartitionLabel) {
+          addStatusItem(`Cannot clear '${label}' - it is currently running!`, 'error');
+          return;
+        }
+        
         if (!confirm(`Are you sure you want to clear the '${label}' partition? This cannot be undone.`)) {
           return;
         }
         
-        showMessage('Clearing partition...', 'info');
+        addStatusItem(`Clearing partition '${label}'...`, 'loading');
         
         fetch('/clear', {
           method: 'POST',
@@ -395,25 +1196,24 @@
         })
         .then(response => response.json())
         .then(data => {
-          showMessage(`Partition '${label}' cleared successfully!`, 'success');
+          addStatusItem(`✓ Partition '${label}' cleared successfully!`, 'success');
           setTimeout(loadStatus, 1000);
         })
         .catch(error => {
           console.error('Error clearing partition:', error);
-          showMessage(`Failed to clear partition: ${error.message}`, 'error');
+          addStatusItem(`✕ Failed to clear partition: ${error.message}`, 'error');
         });
       }
       
-      // Load status on page load and refresh every 5 seconds
+      // Load status on page load only (no auto-refresh to avoid flicker)
       loadStatus();
-      setInterval(loadStatus, 5000);
       
-      // File selection
+      // File selection for firmware
       fileInput.addEventListener('change', function() {
         updateFileLabel();
       });
       
-      // Drag and drop
+      // Drag and drop for firmware
       fileLabel.addEventListener('dragover', function(e) {
         e.preventDefault();
         fileLabel.classList.add('dragover');
@@ -442,6 +1242,40 @@
         }
       }
       
+      // File selection for SPIFFS
+      spiffsFileInput.addEventListener('change', function() {
+        updateSpiffsFileLabel();
+      });
+      
+      // Drag and drop for SPIFFS
+      spiffsFileLabel.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        spiffsFileLabel.classList.add('dragover');
+      });
+      
+      spiffsFileLabel.addEventListener('dragleave', function() {
+        spiffsFileLabel.classList.remove('dragover');
+      });
+      
+      spiffsFileLabel.addEventListener('drop', function(e) {
+        e.preventDefault();
+        spiffsFileLabel.classList.remove('dragover');
+        spiffsFileInput.files = e.dataTransfer.files;
+        updateSpiffsFileLabel();
+      });
+      
+      function updateSpiffsFileLabel() {
+        if (spiffsFileInput.files.length > 0) {
+          const file = spiffsFileInput.files[0];
+          spiffsFileName.textContent = 'Selected: ' + file.name + ' (' + formatBytes(file.size) + ')';
+          spiffsFileName.classList.add('show');
+          spiffsUploadBtn.disabled = false;
+        } else {
+          spiffsFileName.classList.remove('show');
+          spiffsUploadBtn.disabled = true;
+        }
+      }
+      
       function formatBytes(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -453,7 +1287,7 @@
       // Upload firmware
       uploadBtn.addEventListener('click', async function() {
         if (fileInput.files.length === 0) {
-          showMessage('Please select a firmware file', 'error');
+          addStatusItem('✕ Please select a firmware file', 'error');
           return;
         }
         
@@ -477,20 +1311,20 @@
           xhr.addEventListener('load', function() {
             progressSection.classList.remove('show');
             if (xhr.status === 200) {
-              showMessage('Firmware uploaded successfully! Device is rebooting...', 'success');
+              addStatusItem('✓ Firmware uploaded successfully! Device is rebooting...', 'success');
               uploadBtn.disabled = true;
               fileInput.disabled = true;
               fileLabel.style.pointerEvents = 'none';
               fileLabel.style.opacity = '0.5';
             } else {
-              showMessage('Upload failed: ' + xhr.responseText, 'error');
+              addStatusItem('✕ Upload failed: ' + xhr.responseText, 'error');
               uploadBtn.disabled = false;
             }
           });
           
           xhr.addEventListener('error', function() {
             progressSection.classList.remove('show');
-            showMessage('Network error during upload', 'error');
+            addStatusItem('✕ Network error during upload', 'error');
             uploadBtn.disabled = false;
           });
           
@@ -498,25 +1332,251 @@
           xhr.send(file);
         } catch (error) {
           progressSection.classList.remove('show');
-          showMessage('Error: ' + error.message, 'error');
+          addStatusItem('✕ Error: ' + error.message, 'error');
           uploadBtn.disabled = false;
         }
       });
       
-      function showMessage(text, type) {
-        messageDiv.textContent = text;
-        messageDiv.className = 'message show ' + type;
+      // Upload to SPIFFS
+      spiffsUploadBtn.addEventListener('click', async function() {
+        if (spiffsFileInput.files.length === 0) {
+          addStatusItem('✕ Please select a file', 'error');
+          return;
+        }
+        
+        if (!currentSpiffsPartition) {
+          addStatusItem('✕ Please select a partition first', 'error');
+          return;
+        }
+        
+        const file = spiffsFileInput.files[0];
+        spiffsUploadBtn.disabled = true;
+        spiffsProgressSection.classList.add('show');
+        
+        try {
+          const xhr = new XMLHttpRequest();
+          
+          xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+              const percentComplete = (e.loaded / e.total) * 100;
+              spiffsProgressFill.style.width = percentComplete + '%';
+              spiffsProgressFill.textContent = Math.round(percentComplete) + '%';
+              spiffsProgressText.textContent = formatBytes(e.loaded) + ' / ' + formatBytes(e.total);
+            }
+          });
+          
+          xhr.addEventListener('load', function() {
+            spiffsProgressSection.classList.remove('show');
+            if (xhr.status === 200) {
+              addStatusItem(`✓ File '${file.name}' uploaded successfully!`, 'success');
+              spiffsFileInput.value = '';
+              updateSpiffsFileLabel();
+              setTimeout(loadSpiffsFiles, 500);
+            } else {
+              addStatusItem('✕ Upload failed: ' + xhr.responseText, 'error');
+              spiffsUploadBtn.disabled = false;
+            }
+          });
+          
+          xhr.addEventListener('error', function() {
+            spiffsProgressSection.classList.remove('show');
+            addStatusItem('✕ Network error during upload', 'error');
+            spiffsUploadBtn.disabled = false;
+          });
+          
+          xhr.open('POST', '/spiffs/upload?name=' + encodeURIComponent(file.name) + '&partition=' + encodeURIComponent(currentSpiffsPartition), true);
+          xhr.send(file);
+        } catch (error) {
+          spiffsProgressSection.classList.remove('show');
+          addStatusItem('✕ Error: ' + error.message, 'error');
+          spiffsUploadBtn.disabled = false;
+        }
+      });
+      
+      function triggerPartitionUpload(partitionLabel) {
+        const fileInput = document.getElementById(`partition-upload-${partitionLabel}`);
+        fileInput.click();
+      }
+      
+      function dragOverPartitionUpload(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.style.opacity = '0.7';
+      }
+      
+      function dropPartitionUpload(event, partitionLabel) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.style.opacity = '1';
+        
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          uploadPartitionBinary(file, partitionLabel);
+        }
+      }
+      
+      function uploadPartitionFile(event, partitionLabel) {
+        const files = event.target.files;
+        if (files.length > 0) {
+          const file = files[0];
+          uploadPartitionBinary(file, partitionLabel);
+        }
+      }
+      
+      function addStatusItem(message, status) {
+        const statusItem = document.createElement('div');
+        statusItem.style.cssText = `
+          padding: 8px 10px;
+          margin: 5px 0;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: ${status === 'success' ? '#e8f5e9' : status === 'error' ? '#ffebee' : '#e3f2fd'};
+          color: ${status === 'success' ? '#2e7d32' : status === 'error' ? '#c62828' : '#1565c0'};
+          border-left: 3px solid ${status === 'success' ? '#4caf50' : status === 'error' ? '#f44336' : '#2196f3'};
+          animation: fadeInStatus 0.3s ease-in;
+        `;
+        
+        const icon = status === 'success' ? '✓' : status === 'error' ? '✕' : '⟳';
+        statusItem.innerHTML = `<span style="font-weight: bold;">${icon}</span><span>${message}</span>`;
+        
+        statusTicker.insertBefore(statusItem, statusTicker.firstChild);
+        
+        // Auto-remove after 10 seconds with fade-out
+        setTimeout(() => {
+          statusItem.style.animation = 'fadeOutStatus 0.5s ease-out forwards';
+          setTimeout(() => statusItem.remove(), 500);
+        }, 10000);
+      }
+      
+      function uploadPartitionBinary(file, partitionLabel) {
+        const uploadBtn = document.querySelector(`button[onclick="triggerPartitionUpload('${partitionLabel}')"]`);
+        uploadBtn.style.opacity = '0.5';
+        uploadBtn.style.pointerEvents = 'none';
+        
+        // Create progress display
+        const progressId = `partition-progress-${partitionLabel}-${Date.now()}`;
+        const progressContainer = document.createElement('div');
+        progressContainer.id = progressId;
+        progressContainer.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 15px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          min-width: 300px;
+          z-index: 1000;
+        `;
+        document.body.appendChild(progressContainer);
+        
+        const updateProgress = (message, percentage) => {
+          progressContainer.innerHTML = `
+            <div style="margin-bottom: 10px; font-weight: 600; color: #333;">${message}</div>
+            <div style="background: #e0e0e0; border-radius: 8px; height: 24px; overflow: hidden; margin-bottom: 8px;">
+              <div style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); height: 100%; width: ${percentage}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; transition: width 0.2s ease;">
+                ${percentage}%
+              </div>
+            </div>
+            <div style="font-size: 12px; color: #999;">
+              ${formatBytes(Math.round(file.size * percentage / 100))} / ${formatBytes(file.size)}
+            </div>
+          `;
+        };
+        
+        addStatusItem(`Starting upload of ${file.name} to ${partitionLabel}...`, 'loading');
+        updateProgress('Reading file...', 0);
+        
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+          const binaryData = new Uint8Array(event.target.result);
+          
+          updateProgress('Erasing partition...', 0);
+          addStatusItem(`Erasing ${partitionLabel} partition...`, 'loading');
+          
+          const xhr = new XMLHttpRequest();
+          let firstProgressEvent = true;
+          
+          xhr.upload.addEventListener('progress', (e) => {
+            // On first progress event, transition from erasing to writing
+            if (firstProgressEvent) {
+              firstProgressEvent = false;
+              addStatusItem(`Writing to ${partitionLabel} partition...`, 'loading');
+            }
+            
+            if (e.lengthComputable) {
+              const percentComplete = (e.loaded / e.total) * 100;
+              updateProgress('Writing to partition...', percentComplete);
+            }
+          });
+          
+          xhr.addEventListener('load', () => {
+            if (xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText);
+              if (response.status === 'success') {
+                updateProgress('Upload complete!', 100);
+                addStatusItem(`✓ Successfully uploaded to ${partitionLabel}`, 'success');
+                
+                // Remove progress display after 2 seconds
+                setTimeout(() => {
+                  progressContainer.remove();
+                }, 2000);
+              } else {
+                addStatusItem(`✕ Error uploading to ${partitionLabel}: ${response.message || 'Unknown error'}`, 'error');
+                progressContainer.remove();
+              }
+            } else {
+              addStatusItem(`✕ Upload failed with status ${xhr.status}`, 'error');
+              progressContainer.remove();
+            }
+            
+            uploadBtn.style.opacity = '1';
+            uploadBtn.style.pointerEvents = 'auto';
+            
+            // Refresh partition list to show updated size
+            setTimeout(loadStatus, 1000);
+          });
+          
+          xhr.addEventListener('error', () => {
+            addStatusItem(`✕ Network error during upload`, 'error');
+            progressContainer.remove();
+            uploadBtn.style.opacity = '1';
+            uploadBtn.style.pointerEvents = 'auto';
+          });
+          
+          xhr.open('POST', `/upload?label=${encodeURIComponent(partitionLabel)}`, true);
+          xhr.send(binaryData);
+        };
+        
+        reader.onerror = () => {
+          addStatusItem('✕ Error reading file', 'error');
+          progressContainer.remove();
+          uploadBtn.style.opacity = '1';
+          uploadBtn.style.pointerEvents = 'auto';
+        };
+        
+        reader.readAsArrayBuffer(file);
       }
       
       function resetDevice() {
-        if (confirm('Are you sure you want to reset the device? It will reboot into the OTA partition.')) {
+        if (confirm('Are you sure you want to reset the device? It will reboot.')) {
+          addStatusItem('Rebooting device...', 'loading');
           fetch('/reset', { method: 'POST' })
             .then(response => response.text())
             .then(data => {
-              showMessage('Device is rebooting...', 'success');
+              addStatusItem('Device is rebooting...', 'success');
+              // Wait 1 second then refresh the page
+              setTimeout(() => {
+                location.reload();
+              }, 1000);
             })
             .catch(error => {
-              showMessage('Error: ' + error.message, 'error');
+              addStatusItem(`Error: ${error.message}`, 'error');
             });
         }
       }

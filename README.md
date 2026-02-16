@@ -7,6 +7,9 @@ A web-based partition management and firmware recovery application for ESP32 dev
 - **Web-based UI** - Responsive, embedded gzip-compressed web interface
 - **Firmware Management** - Upload, download, and manage OTA firmware partitions
 - **Partition Management** - View, clear, and download any partition on the device
+- **SPIFFS File Browser** - List, upload, download, and delete files with progress tracking
+- **NVS Key-Value Management** - View, edit, and delete NVS keys with inline editing and auto-save
+- **Boot Partition Selection** - Select which firmware partition boots on next restart
 - **Captive Portal** - DNS server redirects all traffic to recovery interface
 - **WiFi Configuration** - Persistent WiFi settings stored in NVS with fallback to compile-time defaults
 - **Device Recovery** - One-click device reset/reboot functionality
@@ -43,11 +46,13 @@ Serves the recovery web interface (gzip-compressed HTML).
 **Response:** Embedded web UI (text/html, gzip-encoded)
 
 ### `GET /status`
-Returns partition information and device status.
+Returns partition information and device status including running and boot partitions.
 
 **Response (application/json):**
 ```json
 {
+  "running_partition": "ota_0",
+  "boot_partition": "ota_0",
   "partitions": [
     {
       "label": "ota_0",
@@ -60,18 +65,40 @@ Returns partition information and device status.
 }
 ```
 
-### `POST /upload`
-Upload and flash new firmware to OTA partition.
+### `POST /upload?label=<partition_label>`
+Upload and flash binary data to any partition (APP or DATA).
 
-**Request:** Binary firmware data (max 5MB)
-**Response:** 200 OK with reboot message, or error status
+**Request:** Binary data (max 5MB)
+- Query Parameters:
+  - `label` - Target partition label (e.g., "ota_0", "spiffs")
 
-**Process:**
-1. Validates firmware size
-2. Erases target OTA partition
-3. Writes firmware in 4KB chunks
-4. Sets OTA partition as boot partition
-5. Reboots device
+**Response (application/json):**
+```json
+{
+  "status": "success",
+  "message": "Binary uploaded successfully"
+}
+```
+
+**Note:** Does not reboot automatically. Boot partition must be set separately with `/set_boot`.
+
+### `POST /set_boot`
+Set the boot partition for next device restart.
+
+**Request (application/json):**
+```json
+{
+  "label": "ota_0"
+}
+```
+
+**Response (application/json):**
+```json
+{
+  "status": "success",
+  "message": "Boot partition updated"
+}
+```
 
 ### `POST /clear`
 Erase a partition completely.
@@ -98,6 +125,157 @@ Download partition contents as binary file.
 - `label` - Partition label (e.g., "ota_0", "spiffs")
 
 **Response:** Binary partition data (application/octet-stream)
+
+### SPIFFS File Management
+
+#### `GET /spiffs/list?partition=<name>`
+List all files in a SPIFFS partition.
+
+**Response (application/json):**
+```json
+{
+  "files": [
+    {
+      "name": "index.html",
+      "size": 1024
+    },
+    {
+      "name": "data.json",
+      "size": 512
+    }
+  ]
+}
+```
+
+#### `POST /spiffs/upload?partition=<name>&name=<filename>`
+Upload a file to SPIFFS.
+
+**Request:** Binary file data
+- Query Parameters:
+  - `partition` - SPIFFS partition label
+  - `name` - Target filename
+
+**Response (application/json):**
+```json
+{
+  "status": "success",
+  "message": "File uploaded"
+}
+```
+
+#### `GET /spiffs/download?partition=<name>&name=<filename>`
+Download a file from SPIFFS.
+
+**Parameters:**
+- `partition` - SPIFFS partition label
+- `name` - Filename to download
+
+**Response:** Binary file data (application/octet-stream)
+
+#### `POST /spiffs/delete`
+Delete a file from SPIFFS.
+
+**Request (application/json):**
+```json
+{
+  "partition": "spiffs",
+  "name": "data.json"
+}
+```
+
+**Response (application/json):**
+```json
+{
+  "status": "success",
+  "message": "File deleted"
+}
+```
+
+### NVS Key-Value Management
+
+#### `GET /nvs/list?partition=<name>`
+List all keys in all namespaces from an NVS partition.
+
+**Response (application/json):**
+```json
+{
+  "keys": [
+    {
+      "namespace": "wifi_config",
+      "key": "ssid",
+      "type": 8,
+      "value": "MyNetwork"
+    },
+    {
+      "namespace": "app_data",
+      "key": "counter",
+      "type": 5,
+      "value": "42"
+    }
+  ]
+}
+```
+
+NVS types:
+- 0: U8, 1: I8, 2: U16, 3: I16, 4: U32, 5: I32, 6: U64, 7: I64, 8: STR, 9: BLOB
+
+#### `GET /nvs/get?partition=<name>&key=<key>`
+Get a specific key value from NVS.
+
+**Response (application/json):**
+```json
+{
+  "key": "ssid",
+  "type": 8,
+  "value": "MyNetwork"
+}
+```
+
+#### `POST /nvs/set`
+Set or update an NVS key value.
+
+**Request (application/json):**
+```json
+{
+  "partition": "nvs",
+  "namespace": "app_data",
+  "key": "counter",
+  "value": "100",
+  "type": 5
+}
+```
+
+**Response (application/json):**
+```json
+{
+  "status": "success",
+  "message": "Key updated"
+}
+```
+
+**Type Field Values:**
+- 0-7: Numeric types (U8, I8, U16, I16, U32, I32, U64, I64)
+- 8: String (STR)
+- 9: Binary (BLOB) - read-only, cannot be edited
+
+#### `POST /nvs/delete`
+Delete an NVS key.
+
+**Request (application/json):**
+```json
+{
+  "partition": "nvs",
+  "key": "old_key"
+}
+```
+
+**Response (application/json):**
+```json
+{
+  "status": "success",
+  "message": "Key deleted"
+}
+```
 
 ### `POST /reset`
 Trigger immediate device reboot.
@@ -153,8 +331,40 @@ The application expects the following ESP partition table arrangement:
 - **factory** - This recovery application
 - **ota_0, ota_1, ota_2** - OTA update partitions
 - **spiffs** - SPIFFS filesystem (optional)
+- **nvs** - NVS data storage for configuration
 
 Ensure your `partitions.csv` defines these partitions appropriately.
+
+## Web UI Features
+
+### Partition View
+- List all available partitions with address, size, and type
+- See which partition is currently running (marked with ● Running indicator)
+- Select boot partition with radio buttons
+- Upload, download, or clear any partition
+
+### SPIFFS Browser
+- Expandable SPIFFS partition browser showing all files
+- File size display
+- Click filename to download
+- Drag-and-drop or click to upload files with progress bar
+- Quick delete with trash button
+- Real-time file list updates
+
+### NVS Key Editor
+- Expandable NVS partition browser showing all keys across all namespaces
+- Click any value to inline edit
+- Automatic validation based on data type (numeric ranges, etc.)
+- Auto-save on blur (click away)
+- BLOB data shown as read-only
+- Quick delete with trash button
+- Real-time key list updates
+
+### Status Ticker
+- Running activity feed showing all operations
+- Status messages with success/error indicators
+- Auto-fade after 10 seconds
+- Operation logging (uploads, deletes, boots, etc.)
 
 ## Troubleshooting
 

@@ -15,5 +15,5 @@ if(NOT CMAKE_BUILD_EARLY_EXPANSION)
 endif()
 
 idf_component_register(SRCS "main.c"
-                       PRIV_REQUIRES esp_event esp_wifi esp_http_server esp_partition esp_netif lwip freertos app_update nvs_flash dns_server
+                       PRIV_REQUIRES esp_event esp_wifi esp_http_server esp_partition esp_netif lwip freertos app_update nvs_flash dns_server spiffs
                        EMBED_FILES "${ROOT_HTML_GZ}")
