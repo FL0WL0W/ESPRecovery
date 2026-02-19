@@ -145,69 +145,115 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     size_t write_offset = 0;
     int pages_compared = 0;
     int pages_written = 0;
-    char *buf = malloc(4096);      // 4KB page buffer for writing
-    if (!buf) {
+    
+    // Buffers for optimized writing
+    char *page_buf = malloc(4096);           // 4KB buffer for reading pages
+    char *existing_buf = malloc(4096);       // 4KB buffer for comparing
+    char *write_buf = malloc(256 * 1024);    // 256KB accumulation buffer
+    
+    if (!page_buf || !existing_buf || !write_buf) {
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Memory allocation failed");
-        return ESP_FAIL;
-    }
-    char *existing_buf = malloc(4096);      // 4KB page buffer for reading
-    if (!existing_buf) {
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Memory allocation failed");
-        free(buf);
+        if (page_buf) free(page_buf);
+        if (existing_buf) free(existing_buf);
+        if (write_buf) free(write_buf);
         return ESP_FAIL;
     }
     
+    size_t write_buf_offset = 0;             // Offset within write_buf
+    size_t write_buf_start_addr = 0;         // Starting partition address for write_buf
+    bool write_buf_active = false;           // Whether we're accumulating changes
+    
     while (received < total_len) {
-        int recv_available = 0; // Bytes available in recv_buf
         int to_recv = (total_len - received) > 4096 ? 4096 : (total_len - received);
-        while(recv_available < to_recv){
-            // Fill receive buffer
-            ret = httpd_req_recv(req, buf + recv_available, to_recv - recv_available);
+        
+        // Receive full 4KB or partial for last chunk
+        int recv_bytes = 0;
+        while (recv_bytes < to_recv) {
+            ret = httpd_req_recv(req, page_buf + recv_bytes, to_recv - recv_bytes);
             if (ret <= 0) {
                 if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
                     ESP_LOGE(TAG, "Upload socket timeout");
                 }
-                break;
+                goto error_out;
             }
-            recv_available += ret;
+            recv_bytes += ret;
+        }
+        
+        // Pad partial final page with 0xFF
+        if (recv_bytes < 4096) {
+            memset(page_buf + recv_bytes, 0xFF, 4096 - recv_bytes);
         }
         
         // Read existing data to compare
-        esp_err_t read_err = esp_partition_read(partition, write_offset, existing_buf, to_recv);
+        esp_err_t read_err = esp_partition_read(partition, write_offset, existing_buf, 4096);
         
-        // Check if data differs
-        bool data_differs = false;
-        if (read_err != ESP_OK) {
-            data_differs = true;
-        } else if (memcmp(buf, existing_buf, to_recv) != 0) {
-            data_differs = true;
-        }
-        
+        // Check if this page differs
+        bool data_differs = (read_err != ESP_OK) || (memcmp(page_buf, existing_buf, 4096) != 0);
         pages_compared++;
         
-        // Only erase and write if data differs
         if (data_differs) {
-            esp_err_t err = esp_partition_erase_range(partition, write_offset, 4096);
-            if (err != ESP_OK) {
-                ESP_LOGE(TAG, "Failed to erase partition at 0x%lx: %d", write_offset, err);
-                httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to erase partition");
-                free(buf);
-                free(existing_buf);
-                return ESP_FAIL;
+            // Page differs - add to accumulation buffer
+            if (!write_buf_active) {
+                write_buf_active = true;
+                write_buf_start_addr = write_offset;
+                write_buf_offset = 0;
             }
             
-            err = esp_partition_write(partition, write_offset, (const void *)buf, 4096);
-            if (err != ESP_OK) {
-                ESP_LOGE(TAG, "Failed to write partition: %s", esp_err_to_name(err));
-                httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Write failed");
-                free(buf);
-                free(existing_buf);
-                return ESP_FAIL;
+            // Copy page to write buffer
+            memcpy(write_buf + write_buf_offset, page_buf, 4096);
+            write_buf_offset += 4096;
+            
+            // Check if accumulation buffer is full or if this is the last page
+            bool buf_full = (write_buf_offset >= 256 * 1024);
+            bool is_last_page = (received + to_recv >= total_len);
+            
+            if (buf_full || is_last_page) {
+                // Flush accumulation buffer
+                size_t erase_len = ((write_buf_offset + 4095) / 4096) * 4096;  // Round up to 4KB
+                
+                esp_err_t err = esp_partition_erase_range(partition, write_buf_start_addr, erase_len);
+                if (err != ESP_OK) {
+                    ESP_LOGE(TAG, "Failed to erase partition at 0x%lx: %d", write_buf_start_addr, err);
+                    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to erase partition");
+                    goto error_out;
+                }
+                
+                err = esp_partition_write(partition, write_buf_start_addr, write_buf, write_buf_offset);
+                if (err != ESP_OK) {
+                    ESP_LOGE(TAG, "Failed to write partition: %s", esp_err_to_name(err));
+                    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Write failed");
+                    goto error_out;
+                }
+                
+                pages_written += (write_buf_offset / 4096);
+                write_buf_active = false;
+                write_buf_offset = 0;
             }
-            pages_written++;
+        } else {
+            // Page matches existing - flush any pending writes
+            if (write_buf_active) {
+                size_t erase_len = ((write_buf_offset + 4095) / 4096) * 4096;  // Round up to 4KB
+                
+                esp_err_t err = esp_partition_erase_range(partition, write_buf_start_addr, erase_len);
+                if (err != ESP_OK) {
+                    ESP_LOGE(TAG, "Failed to erase partition at 0x%lx: %d", write_buf_start_addr, err);
+                    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to erase partition");
+                    goto error_out;
+                }
+                
+                err = esp_partition_write(partition, write_buf_start_addr, write_buf, write_buf_offset);
+                if (err != ESP_OK) {
+                    ESP_LOGE(TAG, "Failed to write partition: %s", esp_err_to_name(err));
+                    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Write failed");
+                    goto error_out;
+                }
+                
+                pages_written += (write_buf_offset / 4096);
+                write_buf_active = false;
+                write_buf_offset = 0;
+            }
         }
         
-        // Move to next page
         write_offset += 4096;
         received += to_recv;
         
@@ -217,8 +263,9 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         }
     }
 
-    free(buf);
+    free(page_buf);
     free(existing_buf);
+    free(write_buf);
 
     if (received != total_len) {
         ESP_LOGE(TAG, "Upload incomplete: received %d / %d bytes", received, total_len);
@@ -233,6 +280,12 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     httpd_resp_send(req, "{\"status\":\"success\", \"message\":\"Binary uploaded successfully\"}", HTTPD_RESP_USE_STRLEN);
 
     return ESP_OK;
+
+error_out:
+    free(page_buf);
+    free(existing_buf);
+    free(write_buf);
+    return ESP_FAIL;
 }
 
 // HTTP Partition Upload Handler - Upload binary data to any partition
