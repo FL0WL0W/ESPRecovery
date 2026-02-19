@@ -1448,7 +1448,21 @@ void app_main(void)
     // Initialize networking
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_ap();
+    esp_netif_ip_info_t ip_info = {
+        .ip = { .addr = ESP_IP4TOADDR(192, 168, 4, 1) },
+        .gw = { .addr = ESP_IP4TOADDR(0, 0, 0, 0) },  // No gateway
+        .netmask = { .addr = ESP_IP4TOADDR(255, 255, 255, 0) }
+    };
+    esp_netif_inherent_config_t esp_netif_inherent_ap_config = ESP_NETIF_INHERENT_DEFAULT_WIFI_AP();
+    esp_netif_inherent_ap_config.ip_info = &ip_info;
+    esp_netif_t *ap_netif = esp_netif_create_wifi(WIFI_IF_AP, &esp_netif_inherent_ap_config);
+    ESP_ERROR_CHECK(esp_wifi_set_default_wifi_ap_handlers());
+
+    // Set captive portal URI (DHCP Option 114) for devices that support it
+    const char *captive_portal_uri = "http://192.168.4.1/";
+    ESP_ERROR_CHECK(esp_netif_dhcps_option(ap_netif, ESP_NETIF_OP_SET, 
+                                            ESP_NETIF_CAPTIVEPORTAL_URI, 
+                                            (void *)captive_portal_uri, strlen(captive_portal_uri)));
 
     // Initialize WiFi
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
