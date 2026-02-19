@@ -469,7 +469,7 @@ static esp_err_t download_partition_handler(httpd_req_t *req)
 // HTTP 404 Handler
 static esp_err_t http_404_handler(httpd_req_t *req, httpd_err_code_t err)
 {
-    httpd_resp_set_status(req, "303 See Other");
+    httpd_resp_set_status(req, "404 Not Found");
     httpd_resp_set_hdr(req, "Location", "/");
     httpd_resp_send(req, "Redirect to recovery interface", HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
