@@ -31,13 +31,6 @@ static const char *TAG = "esp_recovery_factory";
 
 #define MAX_OTA_DATA_SIZE (5 * 1024 * 1024)
 
-
-typedef struct {
-    size_t received_bytes;
-} recovery_state_t;
-
-static recovery_state_t recovery_state = {0};
-
 // NVS WiFi Configuration Keys
 #define NVS_WIFI_NAMESPACE "wifi_config"
 #define NVS_WIFI_SSID_KEY "ssid"
@@ -102,7 +95,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
 {
     int total_len = req->content_len;
     int received = 0;
-    char *buf = malloc(4096);
     int ret;
     
     // Get partition label from query parameter
@@ -112,7 +104,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         if (label_ptr) {
             label_ptr++;
             memmove(label, label_ptr, strlen(label_ptr) + 1);
-            // URL decode
             int i = 0, j = 0;
             while (label[i]) {
                 if (label[i] == '%' && i + 2 < sizeof(label)) {
@@ -131,7 +122,6 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     if (strlen(label) == 0) {
         ESP_LOGE(TAG, "Partition label not provided");
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Partition label required");
-        free(buf);
         return ESP_FAIL;
     }
 
@@ -140,59 +130,95 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
     if (total_len > MAX_OTA_DATA_SIZE) {
         ESP_LOGE(TAG, "Binary too large (%d > %d)", total_len, MAX_OTA_DATA_SIZE);
         httpd_resp_send_err(req, HTTPD_413_CONTENT_TOO_LARGE, "Binary too large");
-        free(buf);
         return ESP_FAIL;
     }
 
-    // Find the partition by label
     const esp_partition_t *partition = esp_partition_find_first(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, label);
     if (!partition) {
         ESP_LOGE(TAG, "Failed to find partition with label: %s", label);
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Partition not found");
-        free(buf);
         return ESP_FAIL;
     }
 
     ESP_LOGI(TAG, "Writing to partition: %s (0x%lx, size: 0x%lx)", partition->label, partition->address, partition->size);
 
-    esp_err_t err = esp_partition_erase_range(partition, 0, partition->size);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to erase partition: %s", esp_err_to_name(err));
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to erase partition");
+    size_t write_offset = 0;
+    int pages_compared = 0;
+    int pages_written = 0;
+    char *buf = malloc(4096);      // 4KB page buffer for writing
+    if (!buf) {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Memory allocation failed");
+        return ESP_FAIL;
+    }
+    char *existing_buf = malloc(4096);      // 4KB page buffer for reading
+    if (!existing_buf) {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Memory allocation failed");
         free(buf);
         return ESP_FAIL;
     }
-
-    ESP_LOGI(TAG, "Partition erased successfully");
-
-    size_t write_offset = 0;
+    
     while (received < total_len) {
-        ret = httpd_req_recv(req, buf, (total_len - received) > 4096 ? 4096 : (total_len - received));
-        if (ret <= 0) {
-            if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
-                ESP_LOGE(TAG, "Upload socket timeout");
+        int recv_available = 0; // Bytes available in recv_buf
+        int to_recv = (total_len - received) > 4096 ? 4096 : (total_len - received);
+        while(recv_available < to_recv){
+            // Fill receive buffer
+            ret = httpd_req_recv(req, buf + recv_available, to_recv - recv_available);
+            if (ret <= 0) {
+                if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+                    ESP_LOGE(TAG, "Upload socket timeout");
+                }
+                break;
             }
-            break;
+            recv_available += ret;
         }
-
-        err = esp_partition_write(partition, write_offset, (const void *)buf, ret);
-        if (err != ESP_OK) {
-            ESP_LOGE(TAG, "Failed to write partition: %s", esp_err_to_name(err));
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Write failed");
-            free(buf);
-            return ESP_FAIL;
+        
+        // Read existing data to compare
+        esp_err_t read_err = esp_partition_read(partition, write_offset, existing_buf, to_recv);
+        
+        // Check if data differs
+        bool data_differs = false;
+        if (read_err != ESP_OK) {
+            data_differs = true;
+        } else if (memcmp(buf, existing_buf, to_recv) != 0) {
+            data_differs = true;
         }
-
-        received += ret;
-        write_offset += ret;
-        recovery_state.received_bytes += ret;
+        
+        pages_compared++;
+        
+        // Only erase and write if data differs
+        if (data_differs) {
+            esp_err_t err = esp_partition_erase_range(partition, write_offset, 4096);
+            if (err != ESP_OK) {
+                ESP_LOGE(TAG, "Failed to erase partition at 0x%lx: %d", write_offset, err);
+                httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to erase partition");
+                free(buf);
+                free(existing_buf);
+                return ESP_FAIL;
+            }
+            
+            err = esp_partition_write(partition, write_offset, (const void *)buf, 4096);
+            if (err != ESP_OK) {
+                ESP_LOGE(TAG, "Failed to write partition: %s", esp_err_to_name(err));
+                httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Write failed");
+                free(buf);
+                free(existing_buf);
+                return ESP_FAIL;
+            }
+            pages_written++;
+        }
+        
+        // Move to next page
+        write_offset += 4096;
+        received += to_recv;
         
         if (received % (64 * 1024) == 0) {
-            ESP_LOGI(TAG, "Upload progress: %d/%d bytes (%.1f%%)", received, total_len, (float)received / total_len * 100);
+            ESP_LOGI(TAG, "Upload progress: %d/%d bytes (%.1f%%) - %d/%d pages written", 
+                     received, total_len, (float)received / total_len * 100, pages_written, pages_compared);
         }
     }
 
     free(buf);
+    free(existing_buf);
 
     if (received != total_len) {
         ESP_LOGE(TAG, "Upload incomplete: received %d / %d bytes", received, total_len);
@@ -200,7 +226,8 @@ static esp_err_t upload_post_handler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    ESP_LOGI(TAG, "Binary uploaded successfully to partition '%s'. Total: %d bytes", label, received);
+    ESP_LOGI(TAG, "Binary uploaded successfully to partition '%s'. Total: %d bytes (%d pages compared, %d pages written)", 
+             label, received, pages_compared, pages_written);
     
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, "{\"status\":\"success\", \"message\":\"Binary uploaded successfully\"}", HTTPD_RESP_USE_STRLEN);
