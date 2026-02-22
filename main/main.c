@@ -22,6 +22,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
+#include "hal/wdt_hal.h"
 
 // Embedded web UI (gzipped)
 extern const char root_start[] asm("_binary_root_html_gz_start");
@@ -1513,6 +1514,8 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
     }
 }
 
+static wdt_hal_context_t rtc_wdt_ctx = RWDT_HAL_CONTEXT_DEFAULT();
+
 void app_main(void)
 {
     ESP_LOGI(TAG, "=== ESP Recovery Factory Application ===");
@@ -1589,6 +1592,10 @@ void app_main(void)
     while(1) {
         vTaskDelay(pdMS_TO_TICKS(5000));
         // Feed the bootloader watchdog to prevent reset to factory partition
-        esp_task_wdt_reset();
+        if (wdt_hal_is_enabled(&rtc_wdt_ctx)) {
+            wdt_hal_write_protect_disable(&rtc_wdt_ctx);
+            wdt_hal_feed(&rtc_wdt_ctx);
+            wdt_hal_write_protect_enable(&rtc_wdt_ctx);
+        }
     }
 }
